@@ -1,4 +1,6 @@
 # sesame-smart-lock-on-discord
+初代セサミとsesame miniのみ対応
+sesame3とsesame4については対応外
 
 # Installation
 ```bash
