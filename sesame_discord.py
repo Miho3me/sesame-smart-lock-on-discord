@@ -72,7 +72,7 @@ async def on_message(message):
             await message.channel.send(f'[{now_time}] sesame本体は他の端末で使用中か、インターネット接続に問題があるため、WiFiモジュールが青点滅しているか確認してください。')
         else:
             await message.channel.send(f'[{now_time}] [{sesame_status["battery"]}%] {result}')
-        if battery_percent <= 40:
+        if sesame_status["battery"] <= 40:
             await message.channel.send(f'バッテリー残量警告[{battery_percent}%]: 交換をおすすめします')
 
 
