@@ -3,6 +3,7 @@ import requests as req
 import json
 import datetime
 import yaml
+import time
 
 with open('token.yml') as file:
     yml = yaml.safe_load(file)
@@ -18,24 +19,32 @@ JST = datetime.timezone(t_delta, 'JST')
 
 
 def check_sesame_status():
-    res = req.get(url=f"https://api.candyhouse.co/public/sesame/{SESAME_DEVICE_ID}",
+    res = req.get(url=f'https://api.candyhouse.co/public/sesame/{SESAME_DEVICE_ID}',
                   headers={"Authorization": SESAME_TOKEN}
                   )
     return res
 
 
 def turn_sesame(task_command="lock", discord_message=None):
-    sesame_status = check_sesame_status()
-    lock_status = sesame_status.json()["locked"]
-    battery_status = sesame_status.json()["battery"]
-    responsive = sesame_status.json()["responsive"]
+    sesame_status = check_sesame_status().json()
+    lock_status = sesame_status["locked"]
+    battery_status = sesame_status["battery"]
+    responsive = sesame_status["responsive"]
+
+    # 10秒ほどおかないとDEVICE_IS_BUSYになり判定がバグる
+    time.sleep(10)
     if lock_status is True and task_command != "lock" or lock_status is False and task_command != "unlock":
-        res = req.post(url=f"https://api.candyhouse.co/public/sesame/{SESAME_DEVICE_ID}",
+    #if True:
+        res = req.post(url=f'https://api.candyhouse.co/public/sesame/{SESAME_DEVICE_ID}',
                        headers={"Authorization": SESAME_TOKEN},
                        data=json.dumps({"command": task_command})
                        )
-        if res.json()["task_id"] is not None:
-            return True, battery_status
+        if "task_id" in res.json():
+            return True, sesame_status
+        elif "error" in res.json():
+            return False, sesame_status
+        else:
+            return res.json(), sesame_status
     return "identical"
 
 
@@ -54,16 +63,17 @@ async def on_message(message):
 
     if message.content.startswith('/lock') or message.content.startswith('/unlock'):
         task_command = message.content[1:]
-        result, battery_percent = turn_sesame(task_command)
+        result, sesame_status = turn_sesame(task_command)
         now_time = datetime.datetime.now(JST).time().strftime('%X')
         if result is True:
-            await message.channel.send(f"[{now_time}] {task_command}ed successfully!")
+            await message.channel.send(f'[{now_time}] [{sesame_status["battery"]}%] {task_command} success!')
         elif result is False:
-            await message.channel.send(f"[{now_time}] {task_command}ed failure...")
-        elif result == "identical":
-            print("identical")
-        if battery_percent <= 30:
-            await message.channel.send(f"Battery life alert: {battery_percent}%")
+            await message.channel.send(f'[{now_time}] [{sesame_status["battery"]}%] {task_command} failed.')
+            await message.channel.send(f'[{now_time}] sesame本体は他の端末で使用中か、インターネット接続に問題があるため、WiFiモジュールが青点滅しているか確認してください。')
+        else:
+            await message.channel.send(f'[{now_time}] [{sesame_status["battery"]}%] {result}')
+        if battery_percent <= 40:
+            await message.channel.send(f'バッテリー残量警告[{battery_percent}%]: 交換をおすすめします')
 
 
 client.run(DISCORD_TOKEN)
