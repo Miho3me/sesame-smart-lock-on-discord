@@ -42,7 +42,6 @@ def turn_sesame(task_command="lock", discord_message=None):
 
     # 10秒ほどおかないとDEVICE_IS_BUSYになり判定がバグる そうでもない？
     time.sleep(1)
-
     # print(sesame_status)
     if sesame_status["locked"] is True and task_command != "lock" or\
        sesame_status["locked"] is False and task_command != "unlock":
@@ -94,8 +93,8 @@ async def on_message(message):
 
         task_command = message.content[1:]
         result = turn_sesame(task_command)
-        print(result)
         now_time = datetime.datetime.now(JST).time().strftime('%X')
+
         if result["res_result"] is not None:
             if result["res_result"] == "success" and\
                result["task_result"]["successful"] is True:
