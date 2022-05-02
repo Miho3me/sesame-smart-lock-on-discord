@@ -133,3 +133,4 @@ dmypy.json
 .pyre/
 *.yml
 token.yml
+./logs/
