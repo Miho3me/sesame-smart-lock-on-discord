@@ -100,6 +100,15 @@ async def on_message(message):
        message.author == client.user:
         return
 
+    basicConfig(format="""[%(asctime)s] file: "%(pathname)s", line: %(lineno)s, in function: %(funcName)s, %(levelname)s: %(message)s""",
+                datefmt='%Y-%m-%d %H:%M:%S',
+                filename=f'./logs/{datetime.datetime.today().date()}.log'
+                )
+
+    if message.content.startswith('/ping'):
+        now_time = datetime.datetime.now(JST).time().strftime('%X')
+        await message.channel.send(f'[{now_time}] pong')
+
     if message.content.startswith('/lock') or\
        message.content.startswith('/unlock'):
 
