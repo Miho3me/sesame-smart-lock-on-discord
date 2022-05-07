@@ -42,7 +42,7 @@ def init():
 def git_pull():
     cmd = "git pull"
     git_pull = subprocess.Popen("exec " + cmd, text=True, stdout=subprocess.PIPE, shell=True)
-    logger.dbeug(git_pull.stdout.readline())
+    logger.debeug(git_pull.stdout.readline())
     return git_pull.stdout.readline()
 
 
@@ -61,15 +61,15 @@ def reload(flag_fn=False):
             dir_path = os.getcwd()
             cmd = f"python {dir_path}/sesame_discord.py"
             reload_file = subprocess.Popen("exec " + cmd, stdout=subprocess.PIPE, shell=True)
-            logger.dbeug( "process id = %s" % reload_file.pid )
-            logger.dbeug(reload_file.stdout.readline())
+            logger.debeug( "process id = %s" % reload_file.pid )
+            logger.debeug(reload_file.stdout.readline())
             com_reload_pid = reload_file.pid
 
 
 @client.event
 async def on_ready():
 
-    logger.dbeug("booted")
+    logger.debeug("booted")
 
 @client.event
 async def on_message(message):
@@ -86,7 +86,7 @@ async def on_message(message):
         if pull_result != f"Already up to date.\n":
             pip_install()
             os.kill(com_reload_pid, signal.SIGTERM)
-            logger.dbeug(com_reload_pid)
+            logger.debeug(com_reload_pid)
             flag = True
             com_reload_pid = 0
             logger.debug("reboot done")
