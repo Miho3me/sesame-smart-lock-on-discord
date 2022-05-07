@@ -59,7 +59,7 @@ def reload(flag_fn=False):
     while True:
         if com_reload_pid == 0:
             dir_path = os.getcwd()
-            cmd = f"python {dir_path}/sesame_discord.py"
+            cmd = f"python3 {dir_path}/sesame_discord.py"
             reload_file = subprocess.Popen("exec " + cmd, stdout=subprocess.PIPE, shell=True)
             # print( "process id = %s" % reload_file.pid )
             # print(reload_file.stdout.readline())
