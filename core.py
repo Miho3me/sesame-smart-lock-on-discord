@@ -42,9 +42,9 @@ def init():
 def git_pull():
     cmd = "git pull"
     git_pull = subprocess.Popen("exec " + cmd, text=True, stdout=subprocess.PIPE, shell=True)
-    #print(git_pull)
+    logger.dbeug(git_pull.stdout.readline())
     return git_pull.stdout.readline()
-    #print(git_pull.stdout.readline())
+
 
 def pip_install():
     cmd = "pip install -r requirements.txt"
@@ -59,17 +59,17 @@ def reload(flag_fn=False):
     while True:
         if com_reload_pid == 0:
             dir_path = os.getcwd()
-            cmd = f"python3 {dir_path}/sesame_discord.py"
+            cmd = f"python {dir_path}/sesame_discord.py"
             reload_file = subprocess.Popen("exec " + cmd, stdout=subprocess.PIPE, shell=True)
-            # print( "process id = %s" % reload_file.pid )
-            # print(reload_file.stdout.readline())
+            logger.dbeug( "process id = %s" % reload_file.pid )
+            logger.dbeug(reload_file.stdout.readline())
             com_reload_pid = reload_file.pid
 
 
 @client.event
 async def on_ready():
 
-    print("booted")
+    logger.dbeug("booted")
 
 @client.event
 async def on_message(message):
@@ -86,7 +86,7 @@ async def on_message(message):
         if pull_result != f"Already up to date.\n":
             pip_install()
             os.kill(com_reload_pid, signal.SIGTERM)
-            # print(com_reload_pid)
+            logger.dbeug(com_reload_pid)
             flag = True
             com_reload_pid = 0
             logger.debug("reboot done")
