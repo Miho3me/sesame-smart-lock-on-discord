@@ -91,9 +91,9 @@ async def on_message(message):
             com_reload_pid = 0
             logger.debug("reboot done")
             # await message.channel.send(f'[{datetime.datetime.now(JST).time().strftime("%X")}] update done')
-    elif pull_result == f"Already up to date.\n":
-        logger.debug("Already up to date.")
-        #await message.channel.send(f'[{datetime.datetime.now(JST).time().strftime("%X")}] Already up to date')
+        elif pull_result == f"Already up to date.\n":
+            logger.debug("Already up to date.")
+            #await message.channel.send(f'[{datetime.datetime.now(JST).time().strftime("%X")}] Already up to date')
 
 
 if __name__ == '__main__':
